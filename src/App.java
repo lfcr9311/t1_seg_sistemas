@@ -3,8 +3,6 @@ import java.io.FileReader;
 import java.io.IOException;
 
 public class App {
-    
-        
         
         public static String lerArquivo(String caminhoArquivo) {
             StringBuilder conteudo = new StringBuilder();
@@ -49,11 +47,26 @@ public class App {
 
             //taxa de frequencia das letras
 
+            int frequencia[] = new int[26];
+
             for (int i = 0; i < letras.length; i++) {
                 if (letras[i] > 0) {
-                    System.out.println((char) (i + 'a') + ": " + (double)(letras[i]) / conteudo.length());
+                    
+                    frequencia[i] = letras[i];
                 }
             }
+
+            for (int i = 0; i < frequencia.length; i++) {
+                System.out.println((char) (i + 'a') + ": " + frequencia[i]);
+            }
+
+            System.out.println();
+            System.out.println();
+            System.out.println();
+            System.out.println();
+
+
+            
             
             //System.out.println(conteudo);
         }
