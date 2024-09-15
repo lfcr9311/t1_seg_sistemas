@@ -1,0 +1,4 @@
+enum Linguas {
+    INGLES,
+    PORTUGUES
+}
