@@ -1,5 +1,7 @@
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
@@ -108,51 +110,42 @@ public class App {
         return textoOriginal.toString();
     }
 
+    public static void salvarTextoEmArquivo(String texto, String caminhoArquivo) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(caminhoArquivo))) {
+            writer.write(texto);
+        } catch (IOException e) {
+            System.out.println("Erro ao salvar o arquivo: " + e.getMessage());
+        }
+    }
+    
     public static void main(String[] args) {
-
-        //String caminho = "ingles.txt";
-        String caminho = "portugues.txt";
-        
+        String caminho = "ingles.txt";
         String conteudo = lerArquivo(caminho);
 
         Map<Integer, StringBuilder> mapa = dividirTexto(7, conteudo);
-
         StringBuilder chave = new StringBuilder();
         char letraMaisFrequenteIngles = 'e';
-        char letraMaisFrequentePortugues = 'e';
 
         for (int i = 0; i < mapa.size(); i++) {
-            String fragmento = mapa.get(i).toString();
-            char letraMaisFrequente = letraMaisFrequente(fragmento);
+            String substring = mapa.get(i).toString();
+            char letraMaisFrequente = letraMaisFrequente(substring);
 
-            int shift;
-            char letraChave;
-
-            if (caminho.equals("portugues.txt")) {
-                if (i == 0 || i == mapa.size() - 1) {
-                    shift = calcularShift(letraMaisFrequente, 'a');
-                } else {
-                    shift = calcularShift(letraMaisFrequente, letraMaisFrequentePortugues);
-                }
-            } else {
-                shift = calcularShift(letraMaisFrequente, letraMaisFrequenteIngles);
-            }
-
-            letraChave = (char) ('a' + shift);
+            int shift = calcularShift(letraMaisFrequente, letraMaisFrequenteIngles);
+            char letraChave = (char) ('a' + shift);
             chave.append(letraChave);
 
-            double indiceCoincidencia = calcularIndiceCoincidencia(fragmento);
-
+            double indiceCoincidencia = calcularIndiceCoincidencia(substring);
             System.out.println("Substring " + i + ": Letra mais frequente = " + letraMaisFrequente
-                    + ", Shift = " + shift + ", Letra da chave = " + letraChave + ", Índice de Coincidência = "
-                    + indiceCoincidencia);
-
+                    + ", Shift = " + shift + ", Letra da chave = " + letraChave
+                    + ", Índice de Coincidência = " + indiceCoincidencia);
         }
 
         String chaveFinal = chave.toString();
-        System.out.println("Chave: " + chaveFinal);
+        System.out.println("Chave de criptografia do Vigenère: " + chaveFinal);
 
         String textoOriginal = descriptografarVigenere(conteudo, chaveFinal);
-        //System.out.println("Texto Original Descriptografado:\n" + textoOriginal);
+
+        String nomeArquivoSaida = "textoDescriptografado.txt";
+        salvarTextoEmArquivo(textoOriginal, nomeArquivoSaida);
     }
 }
