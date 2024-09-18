@@ -6,22 +6,7 @@ import java.util.HashMap;
 
 public class App {
 
-    static String alfabeto = "abcdefghijklmnopqrstuvwxyz";
-
-    public static boolean isLetter(char letra) {
-        return alfabeto.indexOf(letra) != -1;
-    }
-
-    public static int letrasContagem(String conteudo) {
-        int cont = 0;
-        for (int i = 0; i < conteudo.length(); i++) {
-            if (isLetter(conteudo.charAt(i))) {
-                cont++;
-            }
-        }
-        return cont;
-    }
-
+    // Método para ler o arquivo
     public static String lerArquivo(String caminhoArquivo) {
         StringBuilder conteudo = new StringBuilder();
 
@@ -37,6 +22,7 @@ public class App {
         return conteudo.toString();
     }
 
+    // Método para dividir o texto em p fragmentos
     public static Map<Integer, StringBuilder> dividirTexto(int p, String conteudo) {
         Map<Integer, StringBuilder> fragmento = new HashMap<>();
 
@@ -52,64 +38,84 @@ public class App {
         return fragmento;
     }
 
-    public static double[] getIC(String conteudo) {
-        int letras[] = new int[26];
-        double frequencia[] = new double[26];
+    public static char letraMaisFrequente(String conteudo) {
+        int[] frequenciaLetras = new int[26];
 
         for (int i = 0; i < conteudo.length(); i++) {
-            char c = conteudo.charAt(i);
+            char c = Character.toLowerCase(conteudo.charAt(i));
             if (c >= 'a' && c <= 'z') {
-                letras[c - 'a']++;
-            } else if (c >= 'A' && c <= 'Z') {
-                letras[c - 'A']++;
+                frequenciaLetras[c - 'a']++;
             }
         }
 
+        int maxFreq = 0;
+        char letraMaisFrequente = 'a';
+
         for (int i = 0; i < 26; i++) {
-            frequencia[i] = (double) letras[i] / conteudo.length();
+            if (frequenciaLetras[i] > maxFreq) {
+                maxFreq = frequenciaLetras[i];
+                letraMaisFrequente = (char) (i + 'a');
+            }
         }
 
-        return frequencia;
+        return letraMaisFrequente;
+    }
+
+    public static int calcularShift(char letra1, char letra2) {
+        return (letra1 - letra2 + 26) % 26;
+    }
+
+    public static String descriptografarVigenere(String textoCifrado, String chave) {
+        StringBuilder textoOriginal = new StringBuilder();
+        int chaveLength = chave.length();
+
+        for (int i = 0; i < textoCifrado.length(); i++) {
+            char letraCifrada = textoCifrado.charAt(i);
+            char letraChave = chave.charAt(i % chaveLength);
+
+            if (Character.isLetter(letraCifrada)) {
+                char base = Character.isLowerCase(letraCifrada) ? 'a' : 'A';
+                // Subtraindo o shift da chave para obter a letra original
+                char letraOriginal = (char) ((letraCifrada - letraChave + 26) % 26 + base);
+                textoOriginal.append(letraOriginal);
+            } else {
+                textoOriginal.append(letraCifrada);
+            }
+        }
+
+        return textoOriginal.toString();
     }
 
     public static void main(String[] args) {
 
-        int letras[] = new int[26];
-        double frequencia[] = new double[26];
-
-        String caminho = "20201-teste2.txt";
+        String caminho = "portugues.txt";
         String conteudo = lerArquivo(caminho);
 
-        Map<Integer, StringBuilder> mapa = new HashMap<>();
+        // Fragmenta o texto em 7 partes
+        Map<Integer, StringBuilder> mapa = dividirTexto(7, conteudo);
 
-        mapa = dividirTexto(7, conteudo);
+        StringBuilder chave = new StringBuilder();
+        char letraMaisFrequenteIngles = 'e';
+        char letraMaisFrequentePortugues = 'e';
 
         for (int i = 0; i < mapa.size(); i++) {
-            getIC(mapa.get(i).toString());
+            String fragmento = mapa.get(i).toString();
+            char letraMaisFrequente = letraMaisFrequente(fragmento);
 
-            int[] frequenciaLetras = new int[26];
+            //int shift = calcularShift(letraMaisFrequente, letraMaisFrequenteIngles);
+            int shift = calcularShift(letraMaisFrequente, letraMaisFrequentePortugues);
 
-            conteudo = mapa.get(i).toString();
+            char letraChave = (char) ('a' + shift);
+            chave.append(letraChave);
 
-            for (int j = 0; j < conteudo.length(); j++) {
-                char c = conteudo.charAt(j);
-                if (c >= 'a' && c <= 'z') {
-                    frequenciaLetras[c - 'a']++;
-                }
-            }
-
-            // System.out.println("Frequência de letras no Fragmento " + i + ":");
-            // for (int k = 0; k < frequenciaLetras.length; k++) {
-            //     System.out.println((char) (k + 'a') + ": " + frequenciaLetras[k]);
-            // }
-
-            long N = conteudo.length();
-            double IC = 0.0;
-            for (int f : frequenciaLetras) {
-                IC += f * (f - 1);
-            }
-            IC /= N * (N - 1);
-            System.out.println("Índice de Coincidência (IC) do Fragmento " + i + ": " + IC);
+            System.out.println("Fragmento " + i + ": Letra mais frequente = " + letraMaisFrequente 
+                                + ", Shift = " + shift + ", Letra da chave = " + letraChave);
         }
+
+        String chaveFinal = chave.toString();
+        System.out.println("Chave de criptografia do Vigenère: " + chaveFinal);
+
+        String textoOriginal = descriptografarVigenere(conteudo, chaveFinal);
+        //System.out.println("Texto Original Descriptografado:\n" + textoOriginal);
     }
 }
