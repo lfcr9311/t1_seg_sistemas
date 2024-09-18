@@ -6,7 +6,6 @@ import java.util.HashMap;
 
 public class App {
 
-    // Método para ler o arquivo
     public static String lerArquivo(String caminhoArquivo) {
         StringBuilder conteudo = new StringBuilder();
 
@@ -22,7 +21,6 @@ public class App {
         return conteudo.toString();
     }
 
-    // Método para dividir o texto em p fragmentos
     public static Map<Integer, StringBuilder> dividirTexto(int p, String conteudo) {
         Map<Integer, StringBuilder> fragmento = new HashMap<>();
 
@@ -91,7 +89,6 @@ public class App {
         String caminho = "ingles.txt";
         String conteudo = lerArquivo(caminho);
 
-        // Fragmenta o texto em 7 partes
         Map<Integer, StringBuilder> mapa = dividirTexto(7, conteudo);
 
         StringBuilder chave = new StringBuilder();
