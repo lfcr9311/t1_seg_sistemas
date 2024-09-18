@@ -59,10 +59,34 @@ public class App {
         return letraMaisFrequente;
     }
 
+    public static double calcularIndiceCoincidencia(String conteudo) {
+        int[] frequenciaLetras = new int[26];
+        long totalLetras = 0;
+
+        for (int i = 0; i < conteudo.length(); i++) {
+            char c = Character.toLowerCase(conteudo.charAt(i));
+            if (c >= 'a' && c <= 'z') {
+                frequenciaLetras[c - 'a']++;
+                totalLetras++;
+            }
+        }
+
+        double ic = 0.0;
+        for (int i = 0; i < frequenciaLetras.length; i++) {
+            ic += frequenciaLetras[i] * (frequenciaLetras[i] - 1);
+        }
+        
+
+        if (totalLetras > 1) {
+            ic /= (double) (totalLetras * (totalLetras - 1));
+        }
+
+        return ic;
+    }
+
     public static int calcularShift(char letra1, char letra2) {
         return (letra1 - letra2 + 26) % 26;
     }
-
 
     public static String descriptografarVigenere(String textoCifrado, String chave) {
         StringBuilder textoOriginal = new StringBuilder();
@@ -74,7 +98,7 @@ public class App {
 
             if (Character.isLetter(letraCifrada)) {
                 char base = Character.isLowerCase(letraCifrada) ? 'a' : 'A';
-                char letraOriginal = (char) ((letraCifrada - letraChave + 26) % 26 + base);
+                char letraOriginal = (char) (calcularShift(letraCifrada, letraChave) + base);
                 textoOriginal.append(letraOriginal);
             } else {
                 textoOriginal.append(letraCifrada);
@@ -86,7 +110,9 @@ public class App {
 
     public static void main(String[] args) {
 
-        String caminho = "ingles.txt";
+        //String caminho = "ingles.txt";
+        String caminho = "portugues.txt";
+        
         String conteudo = lerArquivo(caminho);
 
         Map<Integer, StringBuilder> mapa = dividirTexto(7, conteudo);
@@ -115,14 +141,18 @@ public class App {
             letraChave = (char) ('a' + shift);
             chave.append(letraChave);
 
-            System.out.println("Fragmento " + i + ": Letra mais frequente = " + letraMaisFrequente
-                    + ", Shift = " + shift + ", Letra da chave = " + letraChave);
+            double indiceCoincidencia = calcularIndiceCoincidencia(fragmento);
+
+            System.out.println("Substring " + i + ": Letra mais frequente = " + letraMaisFrequente
+                    + ", Shift = " + shift + ", Letra da chave = " + letraChave + ", Índice de Coincidência = "
+                    + indiceCoincidencia);
+
         }
 
         String chaveFinal = chave.toString();
-        System.out.println("Chave de criptografia do Vigenère: " + chaveFinal);
+        System.out.println("Chave: " + chaveFinal);
 
         String textoOriginal = descriptografarVigenere(conteudo, chaveFinal);
-        System.out.println("Texto Original Descriptografado:\n" + textoOriginal);
+        //System.out.println("Texto Original Descriptografado:\n" + textoOriginal);
     }
 }
