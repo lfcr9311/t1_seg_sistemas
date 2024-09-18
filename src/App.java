@@ -65,6 +65,7 @@ public class App {
         return (letra1 - letra2 + 26) % 26;
     }
 
+
     public static String descriptografarVigenere(String textoCifrado, String chave) {
         StringBuilder textoOriginal = new StringBuilder();
         int chaveLength = chave.length();
@@ -75,7 +76,6 @@ public class App {
 
             if (Character.isLetter(letraCifrada)) {
                 char base = Character.isLowerCase(letraCifrada) ? 'a' : 'A';
-                // Subtraindo o shift da chave para obter a letra original
                 char letraOriginal = (char) ((letraCifrada - letraChave + 26) % 26 + base);
                 textoOriginal.append(letraOriginal);
             } else {
@@ -88,7 +88,7 @@ public class App {
 
     public static void main(String[] args) {
 
-        String caminho = "portugues.txt";
+        String caminho = "ingles.txt";
         String conteudo = lerArquivo(caminho);
 
         // Fragmenta o texto em 7 partes
@@ -102,20 +102,30 @@ public class App {
             String fragmento = mapa.get(i).toString();
             char letraMaisFrequente = letraMaisFrequente(fragmento);
 
-            //int shift = calcularShift(letraMaisFrequente, letraMaisFrequenteIngles);
-            int shift = calcularShift(letraMaisFrequente, letraMaisFrequentePortugues);
+            int shift;
+            char letraChave;
 
-            char letraChave = (char) ('a' + shift);
+            if (caminho.equals("portugues.txt")) {
+                if (i == 0 || i == mapa.size() - 1) {
+                    shift = calcularShift(letraMaisFrequente, 'a');
+                } else {
+                    shift = calcularShift(letraMaisFrequente, letraMaisFrequentePortugues);
+                }
+            } else {
+                shift = calcularShift(letraMaisFrequente, letraMaisFrequenteIngles);
+            }
+
+            letraChave = (char) ('a' + shift);
             chave.append(letraChave);
 
-            System.out.println("Fragmento " + i + ": Letra mais frequente = " + letraMaisFrequente 
-                                + ", Shift = " + shift + ", Letra da chave = " + letraChave);
+            System.out.println("Fragmento " + i + ": Letra mais frequente = " + letraMaisFrequente
+                    + ", Shift = " + shift + ", Letra da chave = " + letraChave);
         }
 
         String chaveFinal = chave.toString();
         System.out.println("Chave de criptografia do Vigenère: " + chaveFinal);
 
         String textoOriginal = descriptografarVigenere(conteudo, chaveFinal);
-        //System.out.println("Texto Original Descriptografado:\n" + textoOriginal);
+        System.out.println("Texto Original Descriptografado:\n" + textoOriginal);
     }
 }
