@@ -119,8 +119,8 @@ public class App {
 
     public static void main(String[] args) {
 
-        String caminho = "portugues.txt"; 
-        //String caminho = "ingles.txt";
+        //String caminho = "portugues.txt"; 
+        String caminho = "ingles.txt";
         String conteudo = lerArquivo(caminho);
 
         Map<Integer, StringBuilder> mapa = dividirTexto(7, conteudo);
@@ -161,8 +161,6 @@ public class App {
 
         String textoOriginal = descriptografarVigenere(conteudo, chaveFinal);
 
-
-        String nomeArquivoSaida = "textoDescriptografado.txt";
-        salvarTextoEmArquivo(textoOriginal, nomeArquivoSaida);
+        salvarTextoEmArquivo(textoOriginal ,"textoDescriptografado.txt");
     }
 }
